@@ -54,7 +54,7 @@
     publicTime: '',
     overTime: '',
     filesUrl: '',
-    completed: false,
+    completed: false
   });
   
   const fetchAssignmentDetails = async () => {
