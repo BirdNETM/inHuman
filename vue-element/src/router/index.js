@@ -8,6 +8,10 @@ import CourseInteraction from '@/views/CourseInteraction.vue'; // 假设这是 "
 import UserInfo from '@/views/UserInfo.vue'; // 假设这是 "个人信息" 页面
 import ChangePassword from '@/views/ChangePassword.vue'; // 假设这是 "修改密码" 页面
 import CourseDetail from '@/views/CourseDetail.vue';
+import Assignments from '@/components/Assignments.vue';
+import Labs from '@/components/Labs.vue';
+import Resources from '@/components/Resources.vue';
+import AssignmentDetails from '@/components/AssignmentDetails.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,8 +59,29 @@ const router = createRouter({
         {
           path: 'CourseDetail/:id',
           name: 'CourseDetail',
-          component: CourseDetail, // "通知" 页面（可以替换成合适的组件）
+          component: CourseDetail, 
         },
+        {
+          path: 'Assignments/:id',
+          name: 'Assignments',
+          component: Assignments
+        },
+        {
+          path: 'Labs',
+          name: 'Labs',
+          component: Labs
+        },
+        {
+          path: 'Resources/:id:fatherId',
+          name: 'Resources',
+          component: Resources
+        },
+        {
+          path: 'AssignmentDetails/:id',
+          name: 'AssignmentDetails',
+          component: AssignmentDetails,
+        },
+
       ],
       redirect:'/Home/1-1'
     },
