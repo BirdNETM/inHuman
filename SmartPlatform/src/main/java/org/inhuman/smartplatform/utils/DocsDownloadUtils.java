@@ -6,13 +6,14 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.UnsupportedEncodingException;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -39,7 +40,6 @@ public class DocsDownloadUtils {
 
             // 设置 Content-Disposition 头，指定下载文件名
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFileName);
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + encodedFileName);
             // 返回文件下载响应
             return ResponseEntity.ok()
@@ -51,5 +51,17 @@ public class DocsDownloadUtils {
             log.error(e.getMessage());
             return ResponseEntity.status(444).body(null);
         }
+    }
+
+    public static void uploadDocsByUrl(MultipartFile file, String url) throws IOException {
+        Path uploadPath = Paths.get(url);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // 使用文件的原始名称
+        file.transferTo(new File(uploadPath.toString()));
+
+        // 返回文件的存储路径
     }
 }

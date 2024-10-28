@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class HomePage {
     private int id;
     private String userName;
+    private String studentCode;
     private String bio;
     private String gender;
     private String avatarUrl;

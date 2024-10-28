@@ -52,4 +52,20 @@ public class ShowLessonsServiceImpl implements ShowLessonsService {
 
         return null;
     }
+
+    @Override
+    public void updateLessonOutline(int id, int lessonId, String outline) {
+        showLessonsMapper.updateLessonOutline(id,lessonId,outline);
+    }
+
+    @Override
+    public void deleteLessonDocs(int id, int docsId) {
+        showLessonsMapper.deleteLessonDocs(id, docsId);
+        showLessonsMapper.deleteLessonDocs(id, docsId);
+    }
+
+    @Override
+    public void updateDownloadLicense(int id, int docsId, int license) {
+        showLessonsMapper.updateDownloadLicense(id, docsId,license);
+    }
 }

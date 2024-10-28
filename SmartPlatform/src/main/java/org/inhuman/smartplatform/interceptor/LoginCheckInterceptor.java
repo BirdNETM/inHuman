@@ -24,6 +24,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         if (!StringUtils.hasLength(jwt)) {  // 使用正确的 StringUtils
             log.info("jwt is empty");
+            log.info(jwt);
             Result error = Result.error("NOT_LOGIN");
             String notLogin = JSONObject.toJSONString(error);  // 使用 FastJSON 库进行序列化
             response.setCharacterEncoding("UTF-8");  // 解决中文乱码问题
