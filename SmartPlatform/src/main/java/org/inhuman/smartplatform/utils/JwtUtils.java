@@ -16,9 +16,7 @@ public class JwtUtils {
     private static final byte[] secretKeyBytes = "NotHumanAtAllNotHumanAtAllNotHumanAtAllNotHumanAtAll".getBytes(StandardCharsets.UTF_8);
     private static final byte[] ResecretKeyBytes = "InHumanInHumanInHumanInHumanInHumanInHumanInHuman".getBytes(StandardCharsets.UTF_8);
 
-    private static final Long accessTokenExpire =  15
-
-            * 1000L;  // Access Token 过期时间 15 分钟
+    private static final Long accessTokenExpire =  600 * 60 * 1000L;  // Access Token 过期时间 15 分钟
     private static final Long refreshTokenExpire = 7 * 24 * 60 * 60 * 1000L; // Refresh Token 过期时间 7 天
 
 

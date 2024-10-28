@@ -139,4 +139,64 @@ public class ShowLessonsController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping("lessons-outline-update")
+    public Result updateLessonOutline(@RequestHeader("accessToken") String token, @RequestParam("outline") String outline, @RequestParam("lessonId") int lessonId) {
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+
+            // 调用 Service 层获取课程列表
+            showLessonsService.updateLessonOutline(user.getId(),lessonId,outline);
+
+            return Result.success();
+
+        } catch (Exception e) {
+            log.error("获取课程信息时发生错误: ", e);
+            return Result.error("获取课程信息失败");
+        }
+    }
+
+    @PostMapping("lessons-docs-delete")
+    public Result deleteLessonDocs(@RequestHeader("accessToken") String token, @RequestParam("docsId") int docsId) {
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+
+            // 调用 Service 层获取课程列表
+            showLessonsService.deleteLessonDocs(user.getId(),docsId);
+
+            return Result.success();
+
+        } catch (Exception e) {
+            log.error("获取课程信息时发生错误: ", e);
+            return Result.error("获取课程信息失败");
+        }
+    }
+
+    @PostMapping("lessons-docs-license-update")
+    public Result updateDownloadLicense(@RequestHeader("accessToken") String token, @RequestParam("docsId") int docsId, @RequestParam("license") int license) {
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+
+            // 调用 Service 层获取课程列表
+            showLessonsService.updateDownloadLicense(user.getId(),docsId,license);
+
+            return Result.success();
+
+        } catch (Exception e) {
+            log.error("获取课程信息时发生错误: ", e);
+            return Result.error("获取课程信息失败");
+        }
+    }
 }

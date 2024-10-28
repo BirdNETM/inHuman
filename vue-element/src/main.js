@@ -14,6 +14,7 @@ for (const [key, component] of Object.entries(ElIcons)) {
     app.component(key, component);
   }
 
+
 app.use(router)
 app.use(ElementPlus);
 app.mount('#app')

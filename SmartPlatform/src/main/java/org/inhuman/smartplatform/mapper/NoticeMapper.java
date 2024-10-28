@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface NoticeMapper {
 
-    @Select("select notice.id, notice.title, notice.sender, notice.time, notify.state from notice join notify where notify.user_id = #{id} and notify.notice_id = notice.id" )
+    @Select("select notice.* from notice join notify where notify.user_id = #{id} and notify.notice_id = notice.id" )
     List<Notice> getNoticeByUserId(int id);
 
 

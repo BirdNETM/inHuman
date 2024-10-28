@@ -19,4 +19,10 @@ public interface ShowLessonsService {
     List<Doc> getLessonsDocs(int id, int lessonId, int fatherId);
 
     ResponseEntity<Resource> downloadDocs(int id, int docsId);
+
+    void updateLessonOutline(int id, int lessonId, String outline);
+
+    void deleteLessonDocs(int id, int docsId);
+
+    void updateDownloadLicense(int id, int docsId,int license);
 }

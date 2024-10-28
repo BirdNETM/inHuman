@@ -123,7 +123,9 @@ export default {
     // 获取课程数据的函数
     const fetchCourses = async () => {
       try {
-        const response = await axios.post(`http://${serverIP}:8080/lessons`);
+        const response = await axios.post(`http://${serverIP}:8080/lessons`,{
+          'accessToken':localStorage.getItem('accessToken')
+        });
 
         // 检查是否需要刷新令牌
         if (response.data.message === 'NOT_LOGIN') {

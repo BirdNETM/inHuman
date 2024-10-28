@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Lesson {
-    private int id;
-    private String name;
-    private String teacher;
-    private String outline;
-    // to complete Lesson's attributes
+public class FavoritiesType {
+    private String type;
+    private List<Postings> postingsList;
 }
