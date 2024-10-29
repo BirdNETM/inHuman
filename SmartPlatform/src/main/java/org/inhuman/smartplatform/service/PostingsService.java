@@ -2,8 +2,12 @@ package org.inhuman.smartplatform.service;
 
 
 import org.inhuman.smartplatform.pojo.Postings;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.MalformedURLException;
 
 @Service
 public interface PostingsService {
@@ -11,5 +15,7 @@ public interface PostingsService {
 
     void insertPostingPicture(int id, int postingId, int pictureId, MultipartFile file);
 
-    void getPostingDetailById(int id, int postingId);
+    Postings getPostingDetailById(int id, int postingId);
+
+    ResponseEntity<Resource> getPostingPicturesById(int id, int postingId, int pictureId) throws MalformedURLException;
 }
