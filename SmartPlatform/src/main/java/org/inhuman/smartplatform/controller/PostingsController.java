@@ -22,6 +22,26 @@ public class PostingsController {
     @Autowired
     PostingsService postingsService;
 
+    @PostMapping("Postings")
+    public Result getPostings(@RequestHeader("accessToken") String token, @RequestParam("lessonId") int lessonId){
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+
+            List<Postings> postings =  postingsService.getPostings(user.getId(),lessonId);
+
+            // 返回成功结果
+            return Result.success(postings);
+
+        } catch (Exception e) {
+            log.error("发生错误: ", e);
+            return Result.error("失败");
+        }
+    }
+
     @PostMapping("Postings-create-content")
     public Result setPosting(@RequestHeader("accessToken") String token, @RequestParam("lessonId") int lessonId, @RequestBody Postings postings) {
         try {
@@ -31,10 +51,10 @@ public class PostingsController {
                 return Result.error("用户信息无效");
             }
 
-            postingsService.setPosting(user.getId(),lessonId,postings);
+            int id = postingsService.setPosting(user.getId(),lessonId,postings);
 
             // 返回成功结果
-            return Result.success();
+            return Result.success(id);
 
         } catch (Exception e) {
             log.error("发生错误: ", e);

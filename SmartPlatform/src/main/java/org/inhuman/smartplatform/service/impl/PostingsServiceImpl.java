@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -23,15 +24,16 @@ public class PostingsServiceImpl implements PostingsService {
 
 
     @Override
-    public void setPosting(int id, int lessonId, Postings postings) {
+    public int setPosting(int id, int lessonId, Postings postings) {
         postingsMapper.setPosting(id,lessonId,postings);
+        return postingsMapper.getPostingId();
     }
 
     @Override
     public void insertPostingPicture(int id, int postingId, int pictureId, MultipartFile file) {
         String filePath;
         try {
-            filePath = "D://postings/" + postingId + "/" + pictureId;
+            filePath = "D://InHumanFile//postings/" + postingId + "/" + pictureId + ".jpg";
             DocsDownloadUtils.uploadDocsByUrl(file, filePath);
         } catch (Exception e) {
             // 可以根据具体需求处理异常，如打印日志或抛出自定义异常
@@ -50,6 +52,11 @@ public class PostingsServiceImpl implements PostingsService {
     @Override
     public ResponseEntity<Resource> getPostingPicturesById(int id, int postingId, int pictureId) throws MalformedURLException {
         return DocsDownloadUtils.getImage(postingsMapper.getPostingPicturesById(id,postingId,pictureId));
+    }
+
+    @Override
+    public List<Postings> getPostings(int id, int lessonId) {
+        return postingsMapper.getPostings(id,lessonId);
     }
 
 
