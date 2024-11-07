@@ -14,9 +14,9 @@
         <h2>课程作业</h2>
       </div>
 
-      <!-- 课程实验卡片 -->
-      <div class="card labs" @click="goTo('Labs')">
-        <h2>课程实验</h2>
+      <!-- 课程讨论区卡片 -->
+      <div class="card labs" @click="goTo('DiscussionList')">
+        <h2>课程讨论区</h2>
       </div>
     </div>
   </div>

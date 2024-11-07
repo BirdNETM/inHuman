@@ -114,7 +114,8 @@
   import { Edit, Delete, Lock, Unlock } from '@element-plus/icons-vue';
   import { ElMessageBox, ElMessage, ElUpload } from 'element-plus';
   import axios from 'axios'
-  
+  import dayjs from 'dayjs';
+
   export default {
     components:{
       ElUpload
@@ -153,6 +154,11 @@
     },
     methods: {
       
+      //格式化日期
+      formatDate(dateString) {
+        return dayjs(dateString).format('YYYY-MM-DD HH:mm:ss');
+      },
+
       //获取后端数据
       async fetchUserData(){
         try{
@@ -469,7 +475,7 @@
           if (this.newAvatarFile) {
             const formData = new FormData();
             formData.append('file', this.newAvatarFile);
-  
+            console.log(this.newAvatarFile);
             const avatarResponse = await axios.post(`http://${serverIP}:8080/HomePage-updateAvatar`, formData, {
               headers: {
                 'accessToken': accessToken,
@@ -685,12 +691,15 @@
   }
   
   .posts-list {
+    
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    gap: 8px;
   }
   
   .post-item {
+    width: 220px; /* 固定宽度 */
+    height: 180px; /* 固定高度 */
     padding: 20px;
     background-color: #fff;
     border-radius: 15px;

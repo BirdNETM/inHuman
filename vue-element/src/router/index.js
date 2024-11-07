@@ -9,7 +9,8 @@ import UserInfo from '@/views/UserInfo.vue'; // 假设这是 "个人信息" 页�
 import ChangePassword from '@/views/ChangePassword.vue'; // 假设这是 "修改密码" 页面
 import CourseDetail from '@/views/CourseDetail.vue';
 import Assignments from '@/components/Assignments.vue';
-import Labs from '@/components/Labs.vue';
+import DiscussionList from '@/components/DiscussionList.vue';
+import Posting from '@/components/Posting.vue';
 import Resources from '@/components/Resources.vue';
 import AssignmentDetails from '@/components/AssignmentDetails.vue';
 
@@ -67,9 +68,9 @@ const router = createRouter({
           component: Assignments
         },
         {
-          path: 'Labs',
-          name: 'Labs',
-          component: Labs
+          path: 'DiscussionList/:id',
+          name: 'DiscussionList',
+          component: DiscussionList
         },
         {
           path: 'Resources/:id:fatherId',
@@ -81,6 +82,11 @@ const router = createRouter({
           name: 'AssignmentDetails',
           component: AssignmentDetails,
         },
+        {
+          path: 'Posting/:id',
+          name: 'Posting',
+          component: Posting,
+        }
 
       ],
       redirect:'/Home/1-1'
