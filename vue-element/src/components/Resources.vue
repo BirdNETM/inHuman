@@ -102,6 +102,7 @@ const handleItemClick = async (item) => {
       window.URL.revokeObjectURL(downloadUrl);
       document.body.removeChild(link);
     } catch (error) {
+      alert("老师未开放该文件的下载");
       console.error('文件下载失败:', error);
     }
   }
@@ -118,10 +119,9 @@ watch(() => route.params, () => {
 
 <style scoped>
 .resources {
-  width: 85vw;
-  max-width: 85vw;
-  margin: 0 auto;
-  padding: 0;
+  width: 82vw;
+  max-width: 82vw;
+  margin-left: 3vw;
   text-align: center;
   overflow-y: auto;
 }
@@ -134,7 +134,7 @@ h1 {
 .resource-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: flex-start;
 }
 
 .resource-item {

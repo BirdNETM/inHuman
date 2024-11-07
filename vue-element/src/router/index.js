@@ -12,6 +12,11 @@ import Assignments from '@/components/Assignments.vue';
 import Labs from '@/components/Labs.vue';
 import Resources from '@/components/Resources.vue';
 import AssignmentDetails from '@/components/AssignmentDetails.vue';
+import TeacherHome from '@/views/TeacherHome.vue';
+import MyTeaching from '@/views/MyTeaching.vue';
+import CourseDetailForTeacher from '@/views/CourseDetailForTeacher.vue';
+import ResourcesEdition from '@/components/ResourcesEdition.vue';
+import TeacherAssignments from '@/views/TeacherAssignments.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -93,6 +98,34 @@ const router = createRouter({
     {
       path: '/',
       redirect: '/Login'
+    },
+    {
+      path: '/TeacherHome',
+      name: 'TeacherHome',
+      redirect: '/TeacherHome/1-1',
+      component: TeacherHome,
+      children:[
+        {
+          path: '1-1',
+          name: 'MyTeaching',
+          component: MyTeaching, // "我的课程" 页面
+        },
+        {
+          path: 'CourseDetailForTeacher/:id',
+          name: 'CourseDetailForTeacher',
+          component: CourseDetailForTeacher,
+        },
+        {
+          path: 'ResourcesEdition/:id:fatherId',
+          name: 'ResourcesEdition',
+          component: ResourcesEdition,
+        },
+        {
+          path: 'TeacherAssignments/:id',
+          name: 'TeacherAssignments',
+          component: TeacherAssignments,
+        },
+      ]
     }
   ]
 })
