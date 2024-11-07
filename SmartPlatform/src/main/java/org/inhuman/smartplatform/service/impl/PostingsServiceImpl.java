@@ -7,8 +7,13 @@ import org.inhuman.smartplatform.pojo.Postings;
 import org.inhuman.smartplatform.service.PostingsService;
 import org.inhuman.smartplatform.utils.DocsDownloadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.MalformedURLException;
 
 @Slf4j
 @Service
@@ -38,8 +43,16 @@ public class PostingsServiceImpl implements PostingsService {
     }
 
     @Override
-    public void getPostingDetailById(int id, int postingId) {
 
+    public Postings getPostingDetailById(int id, int postingId) {
+        //log.info(String.valueOf(postingsMapper.getPostingDetailById(id,postingId)));
+        return postingsMapper.getPostingDetailById(id,postingId);
     }
+
+    @Override
+    public ResponseEntity<Resource> getPostingPicturesById(int id, int postingId, int pictureId) throws MalformedURLException {
+        return DocsDownloadUtils.getImage(postingsMapper.getPostingPicturesById(id,postingId,pictureId));
+    }
+
 
 }

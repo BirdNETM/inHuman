@@ -18,6 +18,7 @@ import CourseDetailForTeacher from '@/views/CourseDetailForTeacher.vue';
 import ResourcesEdition from '@/components/ResourcesEdition.vue';
 import TeacherAssignments from '@/views/TeacherAssignments.vue';
 
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

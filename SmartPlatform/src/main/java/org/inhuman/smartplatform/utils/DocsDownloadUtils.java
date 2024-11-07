@@ -1,11 +1,14 @@
 package org.inhuman.smartplatform.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.inhuman.smartplatform.pojo.User;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -63,5 +66,27 @@ public class DocsDownloadUtils {
         file.transferTo(new File(uploadPath.toString()));
 
         // 返回文件的存储路径
+    }
+
+
+    public static ResponseEntity<Resource> getImage(String url) throws MalformedURLException {
+        Path path = Paths.get(url);
+        log.info(String.valueOf(path));
+
+        // 将 Path 转换为 URI
+        Resource resource = new UrlResource(path.toUri());
+        // 检查文件是否存在
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+        if (resource.exists()) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 }

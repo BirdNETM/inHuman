@@ -26,6 +26,7 @@
               <div class="assignment-status">
                 <el-button
                     v-if="assignment.status == '未提交'"
+
                     type="primary"
                     @click="submitAssignment(assignment.id)"
                     class="upload-button"
@@ -153,6 +154,7 @@
     padding: 20px;
     text-align: center;
     overflow-y: auto
+
   }
   
   h1 {

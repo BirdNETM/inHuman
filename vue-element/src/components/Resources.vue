@@ -103,8 +103,8 @@ const handleItemClick = async (item) => {
       document.body.removeChild(link);
     } catch (error) {
       alert("老师未开放该文件的下载");
-      console.error('文件下载失败:', error);
-    }
+
+
   }
 };
 
@@ -122,6 +122,7 @@ watch(() => route.params, () => {
   width: 82vw;
   max-width: 82vw;
   margin-left: 3vw;
+
   text-align: center;
   overflow-y: auto;
 }
@@ -135,6 +136,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
+
 }
 
 .resource-item {
