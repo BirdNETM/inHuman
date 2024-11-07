@@ -19,8 +19,7 @@
         <p>附件下载:</p>
         <el-link
           v-if="assignment.filesUrl"
-          :href="generateDownloadLink(assignment.filesUrl)"
-          target="_blank"
+          @click.prevent="downloadFile"
           :underline="false"
         >
           下载附件
@@ -102,19 +101,35 @@ const fetchAssignmentDetails = async () => {
   }
 };
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
+// 下载文件
+const downloadFile = async () => {
+  try {
+    const url = `http://${serverIP}:8080/Homework-files-download`;
+    const response = await axios.post(
+      url,
+      null,
+      {
+        params: { homeworkId: assignmentId },
+        headers: { accessToken: accessToken },
+        responseType: 'blob', // 返回文件数据
+      }
+    );
 
-const generateDownloadLink = (filePath) => {
-  return `http://${serverIP}:8080/download?path=${encodeURIComponent(filePath)}`;
+    if (response.status === 200) {
+      // 创建一个URL链接用于下载文件
+      const blob = new Blob([response.data]);
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = assignment.value.filesUrl.split('/').pop(); // 使用文件名作为下载名称
+      link.click();
+      window.URL.revokeObjectURL(downloadUrl);
+    } else {
+      ElMessage.error('文件下载失败');
+    }
+  } catch (error) {
+    ElMessage.error('请求失败: ' + (error.response ? error.response.data : error.message));
+  }
 };
 
 // 选择文件
@@ -154,6 +169,17 @@ const submitHomework = async () => {
   }
 };
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
 onMounted(() => {
   fetchAssignmentDetails();
 });
@@ -165,6 +191,7 @@ onMounted(() => {
   max-width: 85vw;
   margin: 0 auto;
   padding: 20px;
+  overflow-y: auto;
 }
 
 h2 {

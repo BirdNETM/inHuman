@@ -173,13 +173,12 @@
       ElMessage.error('请求失败: ' + (error.response ? error.response.data : error.message));
     }
   };
-
-  const viewDetails = (assignmentId) => {
-  // 跳转到作业详情页面，并传递作业 ID
-  router.push({ name: 'AssignmentDetails', params: { id: assignmentId } });
-};
   
-  // 页面加载时获取作业列表
+  const viewDetails = (assignmentId) => {
+    // 跳转到作业详情页面
+    router.push({ name: 'AssignmentDetailsForTeacher', params: { id: assignmentId } });
+  };
+
   onMounted(() => {
     fetchAssignments();
   });
@@ -192,7 +191,7 @@
     margin: 0 auto;
     padding: 20px;
     text-align: center;
-    overflow-y: auto
+    overflow-y: auto;
   }
   
   h1 {

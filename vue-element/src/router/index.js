@@ -17,6 +17,7 @@ import MyTeaching from '@/views/MyTeaching.vue';
 import CourseDetailForTeacher from '@/views/CourseDetailForTeacher.vue';
 import ResourcesEdition from '@/components/ResourcesEdition.vue';
 import TeacherAssignments from '@/views/TeacherAssignments.vue';
+import AssignmentDetailsForTeacher from '@/views/AssignmentDetailsForTeacher.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -124,6 +125,11 @@ const router = createRouter({
           path: 'TeacherAssignments/:id',
           name: 'TeacherAssignments',
           component: TeacherAssignments,
+        },
+        {
+          path: 'AssignmentDetailsForTeacher/:id',
+          name: 'AssignmentDetailsForTeacher',
+          component: AssignmentDetailsForTeacher,
         },
       ]
     }
