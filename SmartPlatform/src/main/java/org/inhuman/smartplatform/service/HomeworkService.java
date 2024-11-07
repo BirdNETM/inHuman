@@ -5,6 +5,7 @@ import org.inhuman.smartplatform.pojo.Homework;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,4 +17,18 @@ public interface HomeworkService {
     ResponseEntity<Resource> downloadHomeworkFiles(int id, int homeworkId);
 
     Homework getHomeworksById(int id, int homeworkId);
+
+    int publishHomework(int id, int lessonId, Homework homework);
+
+    void publishHomeworkFile(int id, int homeworkId, MultipartFile file);
+
+    void submitHomework(int id, int homeworkId, MultipartFile file) throws Exception;
+
+    void updateHomework(int id, int homeworkId, Homework homework);
+
+    void updateHomeworkFile(int id, int homeworkId, MultipartFile file);
+
+    void deleteHomework(int id, int homeworkId);
+
+    List<String> getStudentsNoSubmitHomework(int id, int homeworkId);
 }

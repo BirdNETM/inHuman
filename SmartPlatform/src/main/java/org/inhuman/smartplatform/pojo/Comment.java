@@ -6,17 +6,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Postings {
-    private int id;
+public class Comment {
+    private int senderId;
+    private int postingId;
     private String username;
-    private int posterId;
-    private int lessonId;
-    private String title;
-    private String content;
-    private Date time;
-    private String type;
-    private int pictureCounts;
+    private String Content;
+    private Date Time;
 }

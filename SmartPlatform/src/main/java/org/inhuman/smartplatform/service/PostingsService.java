@@ -8,14 +8,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
+import java.util.List;
 
 @Service
 public interface PostingsService {
-    void setPosting(int id, int lessonId, Postings postings);
+    int setPosting(int id, int lessonId, Postings postings);
 
     void insertPostingPicture(int id, int postingId, int pictureId, MultipartFile file);
 
     Postings getPostingDetailById(int id, int postingId);
 
     ResponseEntity<Resource> getPostingPicturesById(int id, int postingId, int pictureId) throws MalformedURLException;
+
+    List<Postings> getPostings(int id, int lessonId);
 }
