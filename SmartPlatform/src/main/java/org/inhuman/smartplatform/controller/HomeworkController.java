@@ -10,8 +10,10 @@ import org.inhuman.smartplatform.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -72,118 +74,6 @@ public class HomeworkController {
             return homeworkService.downloadHomeworkFiles(user.getId(),homeworkId);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @PostMapping("/Homework-publish")
-    public Result publishHomework(@RequestHeader("accessToken") String token, @RequestParam("lessonId") int lessonId, @RequestBody Homework homework) {
-        try {
-            // 解析 JWT 令牌
-            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
-
-            int id = homeworkService.publishHomework(user.getId(),lessonId,homework);
-
-            return Result.success(id);
-
-        } catch (Exception e) {
-            log.error("获取作业时发生错误: ", e);
-            return Result.error("获取作业失败");
-        }
-    }
-
-    @PostMapping("/Homework-publish-file")
-    public Result publishHomeworkFile(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId, @RequestBody MultipartFile file) {
-        try {
-            // 解析 JWT 令牌
-            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
-
-            homeworkService.publishHomeworkFile(user.getId(),homeworkId,file);
-
-            return Result.success();
-
-        } catch (Exception e) {
-            log.error("获取作业时发生错误: ", e);
-            return Result.error("获取作业失败");
-        }
-    }
-
-    @PostMapping("/Homework-submit")
-    public Result submitHomework(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId, @RequestBody MultipartFile file) {
-        try {
-            // 解析 JWT 令牌
-            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
-
-            homeworkService.submitHomework(user.getId(),homeworkId,file);
-
-            return Result.success();
-
-        } catch (Exception e) {
-            log.error("获取作业时发生错误: ", e);
-            return Result.error("作业已超时");
-        }
-    }
-
-    @PostMapping("/Homework-update")
-    public Result updateHomework(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId, @RequestBody Homework homework) {
-        try {
-            // 解析 JWT 令牌
-            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
-
-            homeworkService.updateHomework(user.getId(),homeworkId,homework);
-
-            return Result.success();
-
-        } catch (Exception e) {
-            log.error("获取作业时发生错误: ", e);
-            return Result.error("获取作业失败");
-        }
-    }
-
-    @PostMapping("/Homework-updateFile")
-    public Result updateHomeworkFile(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId, @RequestBody MultipartFile file) {
-        try {
-            // 解析 JWT 令牌
-            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
-
-            homeworkService.updateHomeworkFile(user.getId(),homeworkId,file);
-
-            return Result.success();
-
-        } catch (Exception e) {
-            log.error("获取作业时发生错误: ", e);
-            return Result.error("作业已超时");
-        }
-    }
-
-    @PostMapping("/Homework-delete")
-    public Result deleteHomework(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId) {
-        try {
-            // 解析 JWT 令牌
-            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
-
-            homeworkService.deleteHomework(user.getId(),homeworkId);
-
-            return Result.success();
-
-        } catch (Exception e) {
-            log.error("获取作业时发生错误: ", e);
-            return Result.error("获取作业失败");
-        }
-    }
-
-    @PostMapping("/Homework-didn't-submit")
-    public Result getStudentsNoSubmitHomework(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId) {
-        try {
-            // 解析 JWT 令牌
-            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
-
-            List<String> names = homeworkService.getStudentsNoSubmitHomework(user.getId(),homeworkId);
-
-            return Result.success();
-
-        } catch (Exception e) {
-            log.error("获取作业时发生错误: ", e);
-            return Result.error("获取作业失败");
         }
     }
 
