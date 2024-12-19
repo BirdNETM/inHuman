@@ -2,6 +2,7 @@
   <div class="assignment-details">
     <el-card class="box-card">
       <h2>{{ assignment.title }}</h2>
+
       <el-divider></el-divider>
 
       <div class="assignment-content">
@@ -19,8 +20,7 @@
         <p>附件下载:</p>
         <el-link
           v-if="assignment.filesUrl"
-          :href="generateDownloadLink(assignment.filesUrl)"
-          target="_blank"
+          @click.prevent="downloadFile"
           :underline="false"
         >
           下载附件
@@ -42,7 +42,7 @@
           :before-upload="handleFileSelect"
           :show-file-list="false"
         >
-          <el-button type="primary">选择文件</el-button>
+          <el-button v-if="assignment.status != '待批改'" type="primary">选择文件</el-button>
         </el-upload>
         <span v-if="selectedFile">{{ selectedFile.name }}</span>
         <el-button
@@ -53,6 +53,16 @@
         >
           提交作业
         </el-button>
+
+        <el-button
+        v-if="allowMutualReview"
+        type="primary"
+        @click="goToMutualReview"
+        style="margin-top: 10px;"
+      >
+        进入互评
+      </el-button>
+
       </div>
     </el-card>
   </div>
@@ -61,13 +71,51 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useRoute } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 
+
+
 const route = useRoute();
+const router = useRouter();
+const allowMutualReview = ref(null);
+const mutual = ref();
+
 const assignmentId = route.params.id;
 const serverIP = localStorage.getItem('serverIP');
 const accessToken = localStorage.getItem('accessToken');
+
+
+
+const fetchReviewData = async () => {
+  try {
+    const response = await axios.post(
+      `http://${serverIP}:8080/getSpecificMutual`,
+      null, // POST 请求体为空时使用 null
+      {
+        params: {
+          homeWorkId: assignmentId, // Query 参数
+        },
+        headers: {
+          accessToken: localStorage.getItem("accessToken"), // Header 参数
+        },
+      }
+    );
+
+    if (response.data.success) {
+      // 成功处理响应数据
+      mutual.value = response.data.data;
+      allowMutualReview.value = Array.isArray(mutual.value) && mutual.value.length > 0;
+
+    } else {
+      console.error("获取互评数据失败:", response.data.message);
+    }
+  } catch (error) {
+    console.error("获取互评数据失败:", error.response?.data || error.message);
+  }
+};
+
+
 
 const assignment = ref({
   title: '',
@@ -77,6 +125,14 @@ const assignment = ref({
   filesUrl: '',
   completed: false
 });
+
+const goToMutualReview = () => {
+      if (!assignmentId) {
+        console.error("homeworkId 未定义");
+        return;
+      }
+      router.push({ path: `/Mutual/${assignmentId}` }); // 动态路由跳转
+};
 
 const selectedFile = ref(null);
 
@@ -94,6 +150,7 @@ const fetchAssignmentDetails = async () => {
 
     if (response.data.success) {
       assignment.value = response.data.data;
+
     } else {
       ElMessage.error('获取作业详情失败: ' + response.data.message);
     }
@@ -102,19 +159,35 @@ const fetchAssignmentDetails = async () => {
   }
 };
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
+// 下载文件
+const downloadFile = async () => {
+  try {
+    const url = `http://${serverIP}:8080/Homework-files-download`;
+    const response = await axios.post(
+      url,
+      null,
+      {
+        params: { homeworkId: assignmentId },
+        headers: { accessToken: accessToken },
+        responseType: 'blob', // 返回文件数据
+      }
+    );
 
-const generateDownloadLink = (filePath) => {
-  return `http://${serverIP}:8080/download?path=${encodeURIComponent(filePath)}`;
+    if (response.status === 200) {
+      // 创建一个URL链接用于下载文件
+      const blob = new Blob([response.data]);
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = assignment.value.filesUrl.split('/').pop(); // 使用文件名作为下载名称
+      link.click();
+      window.URL.revokeObjectURL(downloadUrl);
+    } else {
+      ElMessage.error('文件下载失败');
+    }
+  } catch (error) {
+    ElMessage.error('请求失败: ' + (error.response ? error.response.data : error.message));
+  }
 };
 
 // 选择文件
@@ -154,9 +227,24 @@ const submitHomework = async () => {
   }
 };
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
 onMounted(() => {
   fetchAssignmentDetails();
+  fetchReviewData();
 });
+
+
+
 </script>
 
 <style scoped>
@@ -165,6 +253,7 @@ onMounted(() => {
   max-width: 85vw;
   margin: 0 auto;
   padding: 20px;
+  overflow-y: auto;
 }
 
 h2 {
