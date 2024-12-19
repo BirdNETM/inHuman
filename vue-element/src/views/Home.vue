@@ -1,4 +1,5 @@
 <template>
+  <AskGPT></AskGPT>
     <div class="home-container">
       <SideBar></SideBar>
       <router-view /> <!-- 使用 router-view 来渲染子路由组件 -->
@@ -10,10 +11,11 @@
   import MyOptions from './MyOptions.vue';
   import axios from 'axios';
   import { useRouter } from 'vue-router';
-  
+  import AskGPT from './AskGPT.vue';
+
   export default {
     components: {
-      SideBar,MyOptions,
+      SideBar,MyOptions,AskGPT
     },
     setup() {
       const router = useRouter();
