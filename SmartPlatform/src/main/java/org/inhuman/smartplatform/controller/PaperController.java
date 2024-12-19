@@ -12,7 +12,6 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -45,9 +44,6 @@ public class PaperController {
             return Result.success();
 
         } catch (Exception e) {
-            if(Objects.equals(e.getMessage(), "no privilege")){
-                return Result.error("没有权限");
-            }
             log.error("发生错误: ", e);
             return Result.error("失败");
         }
@@ -112,9 +108,6 @@ public class PaperController {
             return Result.success();
 
         } catch (Exception e) {
-            if(Objects.equals(e.getMessage(), "no privilege")){
-                return Result.error("没有权限");
-            }
             log.error("发生错误: ", e);
             return Result.error("失败");
         }
@@ -238,6 +231,106 @@ public class PaperController {
 
             // 返回成功结果
             return Result.success(paperService.getAnswersByQuestionId(id, questionId));
+
+        } catch (Exception e) {
+            log.error("发生错误: ", e);
+            return Result.error("失败");
+        }
+    }
+
+    @PostMapping("/Exam-deleteQuestion")
+    public Result deleteQuestion(@RequestHeader("accessToken") String token,
+                                 @RequestParam("questionId") int questionId){
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+
+
+            int id = user.getId();
+            paperService.deleteQuestion(id, questionId);
+            // 返回成功结果
+            return Result.success();
+
+        } catch (Exception e) {
+            log.error("发生错误: ", e);
+            return Result.error("失败");
+        }
+    }
+
+    @PostMapping("/Exam-updateQuestion")
+    public Result updateQuestion(@RequestHeader("accessToken") String token,
+                                 @RequestParam("questionId") int questionId,
+                                  @RequestParam("examId") int examId,
+                                  @RequestParam("type") String type,
+                                  @RequestParam("description") String description,
+                                  @RequestParam("suggestedAnswer") String suggestedAnswer,
+                                  @RequestParam("mark") double mark,
+                                  @RequestParam(value = "choices", required = false) List<String> choices) {
+        try {
+            // 如果 choices 未传入，设置为默认空列表
+            if (choices == null) {
+                choices = new ArrayList<>();
+            }
+
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+
+            paperService.updateQuestion(user.getId(), questionId, examId, type, description, suggestedAnswer, mark, choices);
+            // 返回成功结果
+            return Result.success();
+
+        } catch (Exception e) {
+            log.error("发生错误: ", e);
+            return Result.error("失败");
+        }
+    }
+
+    @PostMapping("/Exam-deleteChoice")
+    public Result deleteChoice(@RequestHeader("accessToken") String token,
+                                 @RequestParam("questionId") int questionId,
+                                 @RequestParam("choice") String choice){
+        try{
+
+
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+
+            paperService.deleteChoice(user.getId(), questionId, choice);
+            // 返回成功结果
+            return Result.success();
+
+        } catch (Exception e) {
+            log.error("发生错误: ", e);
+            return Result.error("失败");
+        }
+    }
+
+    @PostMapping("/Exam-updateChoice")
+    public Result updateChoice(@RequestHeader("accessToken") String token,
+                               @RequestParam("questionId") int questionId,
+                               @RequestParam("oldChoice") String oldChoice,
+                               @RequestParam("newChoice") String newChoice){
+        try{
+
+
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+
+            paperService.updateChoice(user.getId(), questionId, oldChoice, newChoice);
+            // 返回成功结果
+            return Result.success();
 
         } catch (Exception e) {
             log.error("发生错误: ", e);

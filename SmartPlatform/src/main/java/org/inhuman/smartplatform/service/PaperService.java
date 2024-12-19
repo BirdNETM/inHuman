@@ -12,11 +12,11 @@ import java.util.Map;
 @Service
 public interface PaperService {
 
-   void assignQuestion(int id,int examId, String type, String description, String suggestedAnswer, Double mark, List<String> choices) throws Exception;
+   void assignQuestion(int id,int examId, String type, String description, String suggestedAnswer, Double mark, List<String> choices);
 
    void receiveHomework(int id,int studentId, int examId, Map<Integer, String> answers);
 
-   void manualScore(int id,int studentId, int examId, Map<Integer, Double> marks) throws Exception;
+   void manualScore(int id,int studentId, int examId, Map<Integer, Double> marks);
 
    Summary summary(int id,int examId);
 
@@ -29,4 +29,12 @@ public interface PaperService {
    double getMarkById(int id, int examId);
 
    List<Answer> getAnswersByQuestionId(int id,int QuestionId);
+
+   void deleteQuestion(int id, int questionId);
+
+   void updateQuestion(int id, int questionId, int examId, String type, String description, String suggestedAnswer, double mark, List<String> choices);
+
+   void deleteChoice(int id, int questionId, String choice);
+
+   void updateChoice(int id, int questionId, String oldChoice, String newChoice);
 }

@@ -66,7 +66,7 @@ public interface PaperMapper {
     @Select("select * from questions where id = #{id}")
     Question getQuestionById(int id);
 
-    @Select("select totalMark from examsubmit where studentId = #{id} and examId = #{examId}")
+    @Select("SELECT COALESCE(totalMark, 0) FROM examsubmit WHERE studentId = #{id} AND examId = #{examId}")
     double getTotalMarkById(int id, int examId);
 
     @Select("select SUM(mark) from answers where id = #{id} ")
@@ -92,4 +92,29 @@ public interface PaperMapper {
 
     @Select("select studentId from examsubmit where id = #{id}")
     int getStudentId(int id);
+
+    @Delete("delete from questions where id = #{questionId}")
+    void deleteQuestion(int questionId);
+
+    @Update({
+            "UPDATE questions SET examId = #{examId}, " +
+                    "type = #{type}," +
+                    "description = #{description}, " +
+                    "suggestedAnswer = #{suggestedAnswer}," +
+                    "mark = #{mark} " +
+            "WHERE id = #{questionId}"
+    })
+    void updateQuestion(@Param("questionId") int questionId,
+                        @Param("examId") int examId,
+                        @Param("type") String type,
+                        @Param("description") String description,
+                        @Param("suggestedAnswer") String suggestedAnswer,
+                        @Param("mark") double mark,
+                        @Param("choices") List<String> choices);
+
+    @Delete("delete from choicequestions where id = #{id} and choice = #{choice}")
+    void deletechoice(int id, String choice);
+
+    @Update("update choicequestions set choice = #{newChoice} where id = #{id} and choice = #{choice}")
+    void updateChoice(int id, String oldChoice, String newChoice);
 }

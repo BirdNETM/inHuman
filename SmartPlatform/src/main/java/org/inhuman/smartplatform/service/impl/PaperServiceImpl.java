@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.inhuman.smartplatform.mapper.PaperMapper;
 import org.inhuman.smartplatform.pojo.*;
 import org.inhuman.smartplatform.service.PaperService;
-import org.inhuman.smartplatform.utils.DatabaseUtil;
-import org.inhuman.smartplatform.utils.TutorPrivilegeCheckUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +19,7 @@ public class PaperServiceImpl implements PaperService {
     PaperMapper paperMapper;
 
     @Override
-    public void assignQuestion(int id, int examId, String type, String description, String suggestedAnswer, Double mark, List<String> choices) throws Exception {
-        int lessonId = DatabaseUtil.getLessonByExamId(examId);
-        TutorPrivilegeCheckUtil.checkHomeworkPrivilege(id,lessonId,3);
+    public void assignQuestion(int id, int examId, String type, String description, String suggestedAnswer, Double mark, List<String> choices){
         Paper paper = new Paper();
         paper.setExamId(examId);
         paper.setType(type);
@@ -78,11 +74,11 @@ public class PaperServiceImpl implements PaperService {
     }
 
     @Override
-    public void manualScore(int id, int studentId, int examId, Map<Integer, Double> marks) throws Exception {
-        int lessonId = DatabaseUtil.getLessonByExamId(examId);
-        TutorPrivilegeCheckUtil.checkHomeworkPrivilege(id,lessonId,3);
+    public void manualScore(int id, int studentId, int examId, Map<Integer, Double> marks){
         int id_ = paperMapper.getPaperId(examId, studentId);
         for(int key : marks.keySet()){
+            System.out.println(key);
+            System.out.println(marks.get(key));
             paperMapper.recordMark(id_, key, marks.get(key));
         }
     }
@@ -115,6 +111,8 @@ public class PaperServiceImpl implements PaperService {
 
     @Override
     public Question getQuestionById(int id, int questionId) {
+        System.out.println("------------------------------------------------");
+        System.out.println(questionId);
         Question question = paperMapper.getQuestionById(questionId);
         if(Objects.equals(question.getType(), "c")){
             List<String> choices = paperMapper.getChoiceList(questionId);
@@ -139,5 +137,26 @@ public class PaperServiceImpl implements PaperService {
             answer.setStudentId(paperMapper.getStudentId(answer.getId()));
         }
         return answers;
+    }
+
+    @Override
+    public void deleteQuestion(int id, int questionId) {
+        paperMapper.deleteQuestion(questionId);
+    }
+
+    @Override
+    public void updateQuestion(int id, int questionId, int examId, String type, String description, String suggestedAnswer, double mark, List<String> choices) {
+        System.out.println(description);
+        paperMapper.updateQuestion(questionId, examId, type, description, suggestedAnswer, mark, choices);
+    }
+
+    @Override
+    public void deleteChoice(int id, int questionId, String choice) {
+        paperMapper.deletechoice(id, choice);
+    }
+
+    @Override
+    public void updateChoice(int id, int questionId, String oldChoice, String newChoice) {
+        paperMapper.updateChoice(id, oldChoice, newChoice);
     }
 }
