@@ -14,4 +14,7 @@ public class User {
     private String password;
     // 0 学生，1 老师，2 助教
     private int position;
+
+    public User(int mockUserId, String testUser) {
+    }
 }

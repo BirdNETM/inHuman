@@ -24,4 +24,8 @@ public class Result {
     public static Result error(String message){
         return new Result(false,message,null);
     }
+
+    public static Result error(String message,Object data){
+        return new Result(false,message,data);
+    }
 }

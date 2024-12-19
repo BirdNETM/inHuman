@@ -46,7 +46,21 @@ public class PostingsServiceImpl implements PostingsService {
     @Override
     public Postings getPostingDetailById(int id, int postingId) {
         //log.info(String.valueOf(postingsMapper.getPostingDetailById(id,postingId)));
-        return postingsMapper.getPostingDetailById(id,postingId);
+        Postings posting =  postingsMapper.getPostingDetailById(id,postingId);
+        if(postingsMapper.whetherFavorites(id,posting.getId()) == 0){
+            posting.setCollected(false);
+        }
+        else{
+            posting.setCollected(true);
+        }
+
+        if(postingsMapper.whetherLiked(id,posting.getId()) == 0){
+            posting.setLiked(false);
+        }
+        else{
+            posting.setLiked(true);
+        }
+        return posting;
     }
 
     @Override
@@ -56,8 +70,27 @@ public class PostingsServiceImpl implements PostingsService {
 
     @Override
     public List<Postings> getPostings(int id, int lessonId) {
-        return postingsMapper.getPostings(id,lessonId);
+        List<Postings> lists = postingsMapper.getPostings(id,lessonId);
+        for(Postings postings : lists){
+            if(postingsMapper.whetherFavorites(id,postings.getId()) == 0){
+                postings.setCollected(false);
+            }
+            else{
+                postings.setCollected(true);
+            }
+
+            if(postingsMapper.whetherLiked(id,postings.getId()) == 0){
+                postings.setLiked(false);
+            }
+            else{
+                postings.setLiked(true);
+            }
+        }
+        return lists;
     }
 
-
+    @Override
+    public List<Postings> getPostingsByTopic(int id, String topic) {
+        return postingsMapper.getPostingsByTopic(topic);
+    }
 }

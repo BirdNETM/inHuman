@@ -18,4 +18,7 @@ public class HomePage {
     private String avatarUrl;
     private Boolean privacy;
     private String favorites;
+
+    public HomePage(int mockUserId, String testBio, String testLocation) {
+    }
 }

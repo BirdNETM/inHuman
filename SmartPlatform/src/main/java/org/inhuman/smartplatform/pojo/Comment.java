@@ -16,4 +16,7 @@ public class Comment {
     private String username;
     private String Content;
     private Date Time;
+
+    public Comment(int i, int i1, int mockUserId, String newComment) {
+    }
 }

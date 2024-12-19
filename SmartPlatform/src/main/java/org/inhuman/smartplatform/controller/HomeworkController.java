@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -86,6 +87,9 @@ public class HomeworkController {
             return Result.success(id);
 
         } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
             log.error("获取作业时发生错误: ", e);
             return Result.error("获取作业失败");
         }
@@ -102,6 +106,9 @@ public class HomeworkController {
             return Result.success();
 
         } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
             log.error("获取作业时发生错误: ", e);
             return Result.error("获取作业失败");
         }
@@ -112,7 +119,7 @@ public class HomeworkController {
         try {
             // 解析 JWT 令牌
             User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
-
+            log.info("444");
             homeworkService.submitHomework(user.getId(),homeworkId,file);
 
             return Result.success();
@@ -123,5 +130,77 @@ public class HomeworkController {
         }
     }
 
+    @PostMapping("/Homework-update")
+    public Result updateHomework(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId, @RequestBody Homework homework) {
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+
+            homeworkService.updateHomework(user.getId(),homeworkId,homework);
+
+            return Result.success();
+
+        } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
+            log.error("获取作业时发生错误: ", e);
+            return Result.error("获取作业失败");
+        }
+    }
+
+    @PostMapping("/Homework-updateFile")
+    public Result updateHomeworkFile(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId, @RequestBody MultipartFile file) {
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+
+            homeworkService.updateHomeworkFile(user.getId(),homeworkId,file);
+
+            return Result.success();
+
+        } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
+            log.error("获取作业时发生错误: ", e);
+            return Result.error("作业已超时");
+        }
+    }
+
+    @PostMapping("/Homework-delete")
+    public Result deleteHomework(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId) {
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+
+            homeworkService.deleteHomework(user.getId(),homeworkId);
+
+            return Result.success();
+
+        } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
+            log.error("获取作业时发生错误: ", e);
+            return Result.error("获取作业失败");
+        }
+    }
+
+    @PostMapping("/Homework-didn't-submit")
+    public Result getStudentsNoSubmitHomework(@RequestHeader("accessToken") String token, @RequestParam("homeworkId") int homeworkId) {
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+
+            List<String> names = homeworkService.getStudentsNoSubmitHomework(user.getId(),homeworkId);
+
+            return Result.success(names);
+
+        } catch (Exception e) {
+            log.error("获取作业时发生错误: ", e);
+            return Result.error("获取作业失败");
+        }
+    }
 
 }

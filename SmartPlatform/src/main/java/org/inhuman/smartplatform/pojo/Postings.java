@@ -13,10 +13,15 @@ public class Postings {
     private int id;
     private String username;
     private int posterId;
+    private String posterName;
     private int lessonId;
     private String title;
     private String content;
     private Date time;
     private String type;
     private int pictureCounts;
+    private int totalLikes;
+    private int totalCollect;
+    private boolean liked;
+    private boolean collected;
 }

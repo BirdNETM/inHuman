@@ -21,4 +21,6 @@ public interface PostingsService {
     ResponseEntity<Resource> getPostingPicturesById(int id, int postingId, int pictureId) throws MalformedURLException;
 
     List<Postings> getPostings(int id, int lessonId);
+
+    List<Postings> getPostingsByTopic(int id, String topic);
 }

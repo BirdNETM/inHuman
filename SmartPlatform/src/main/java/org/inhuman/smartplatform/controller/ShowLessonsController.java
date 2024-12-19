@@ -13,12 +13,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -155,6 +154,9 @@ public class ShowLessonsController {
             return Result.success();
 
         } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
             log.error("获取课程信息时发生错误: ", e);
             return Result.error("获取课程信息失败");
         }
@@ -175,6 +177,9 @@ public class ShowLessonsController {
             return Result.success();
 
         } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
             log.error("获取课程信息时发生错误: ", e);
             return Result.error("获取课程信息失败");
         }
@@ -195,8 +200,61 @@ public class ShowLessonsController {
             return Result.success();
 
         } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
             log.error("获取课程信息时发生错误: ", e);
             return Result.error("获取课程信息失败");
         }
     }
+
+    @PostMapping("lessons-docs-insert")
+        public Result insertDocs(
+            @RequestHeader("accessToken") String token,
+            @RequestParam("lessonId") int lessonId,
+            @RequestParam("docFatherId") int docFatherId,
+            @RequestParam("downloadLicense") int downloadLicense,
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "docName", required = false) String docName) {
+        try {
+            // Parse JWT token to get user info
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+            showLessonsService.insertDocs(user.getId(),lessonId, docFatherId, downloadLicense, file, docName);
+            return Result.success();
+        } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
+            log.error("插入课程文档信息时发生错误: ", e);
+            return Result.error("插入课程文档信息失败");
+        }
+    }
+
+    @PostMapping("/lessons-directory-insert")
+    public Result insertDirectory(
+            @RequestHeader("accessToken") String token,
+            @RequestParam("lessonId") int lessonId,
+            @RequestParam("docFatherId") int docFatherId,
+            @RequestParam("downloadLicense") int downloadLicense,
+            @RequestParam(value = "docName", required = false) String docName) {
+        try {
+            // Parse JWT token to get user info
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            if (user == null) {
+                return Result.error("用户信息无效");
+            }
+            showLessonsService.insertDirectory(user.getId(),lessonId, docFatherId, downloadLicense, docName);
+            return Result.success();
+        } catch (Exception e) {
+            if(Objects.equals(e.getMessage(), "no privilege")){
+                return Result.error("没有权限");
+            }
+            log.error("插入课程文档信息时发生错误: ", e);
+            return Result.error("插入课程文档信息失败");
+        }
+    }
 }
+

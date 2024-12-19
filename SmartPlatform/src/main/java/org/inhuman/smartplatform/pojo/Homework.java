@@ -19,5 +19,5 @@ public class Homework {
     private Date publicTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date overTime;
-    private boolean completed;
+    private String status;
 }

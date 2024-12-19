@@ -7,7 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class SmartPlatformApplicationTests {
 
     @Test
-    void contextLoads() {
+    void LoginTest() {
+
     }
 
 }

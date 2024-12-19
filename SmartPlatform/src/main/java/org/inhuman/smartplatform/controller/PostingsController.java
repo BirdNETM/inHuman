@@ -22,8 +22,9 @@ public class PostingsController {
     @Autowired
     PostingsService postingsService;
 
-    @PostMapping("Postings")
+    @PostMapping("/Postings")
     public Result getPostings(@RequestHeader("accessToken") String token, @RequestParam("lessonId") int lessonId){
+        log.info("555");
         try {
             // 解析 JWT 令牌
             User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
@@ -31,6 +32,7 @@ public class PostingsController {
                 return Result.error("用户信息无效");
             }
 
+            log.info("not controller");
             List<Postings> postings =  postingsService.getPostings(user.getId(),lessonId);
 
             // 返回成功结果
@@ -62,7 +64,7 @@ public class PostingsController {
         }
     }
 
-    @PostMapping("Postings-insert-picture")
+    @PostMapping("/Postings-insert-picture")
     public Result insertPostingPicture(@RequestHeader("accessToken") String token, @RequestParam("postingId") int postingId, @RequestParam("pictureId") int pictureId, @RequestBody MultipartFile file) {
         try {
             // 解析 JWT 令牌
@@ -82,7 +84,7 @@ public class PostingsController {
         }
     }
 
-    @PostMapping("Postings-detail")
+    @PostMapping("/Postings-detail")
     public Result getPostingDetailById(@RequestHeader("accessToken") String token, @RequestParam("postingId") int postingId) {
         try {
             // 解析 JWT 令牌
@@ -114,4 +116,18 @@ public class PostingsController {
         }
     }
 
+    @PostMapping("/Postings-topic")
+    public Result getPostingByTopic(@RequestHeader("accessToken") String token,
+                                    @RequestParam("topic") String topic) {
+        try {
+            // 解析 JWT 令牌
+            User user = JwtUtils.getUserFromClaims(JwtUtils.parseJwt(token));
+            List<Postings> postings = postingsService.getPostingsByTopic(user.getId(),topic);
+            return Result.success(postings);
+
+        } catch (Exception e) {
+            log.error("发生错误: ", e);
+            return Result.error("失败");
+        }
+    }
 }
