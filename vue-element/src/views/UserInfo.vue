@@ -104,7 +104,7 @@
           <h4>{{ post.title }}</h4>
           <p class="post-excerpt">{{ post.content }}</p>
           <p class="post-time">{{ post.time }}</p>
-          <a @click.prevent="viewPost(post.id)" class="read-more">查看详情</a>
+          <a @click="goTonoticeDetail(post.id)" class="read-more">查看详情</a>
         </div>
       </div>
     </div>
@@ -509,10 +509,14 @@
           console.error('保存个人信息失败', error);
           this.$message.error('保存个人信息时出现错误');
         }
-      }
+      },
+      goTonoticeDetail(id) {
+      this.$router.push({ name: 'Posting', params: { id: String(id) } });
+    }
   
       
     },
+    
   };
   </script>
   

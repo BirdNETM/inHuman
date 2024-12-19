@@ -57,7 +57,18 @@
       </div>
     </el-dialog>
     <div class="post-container">
-      <DiscussionPost v-for="post in sortedPosts" :key="post.id" :post="post" />
+      <DiscussionPost v-for="post in filteredPosts" :key="post.id" :post="post" />
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="search-bar-container">
+      <el-input
+        v-model="searchKeyword"
+        placeholder="输入关键词进行搜索..."
+        prefix-icon="el-icon-search"
+        clearable
+        class="search-input"
+      ></el-input>
     </div>
   </div>
 </template>
@@ -67,6 +78,7 @@ import axios from 'axios';
 import DiscussionPost from './DiscussionPost.vue';
 import { ElDialog, ElMessage, ElForm, ElFormItem, ElInput, ElButton, ElUpload } from 'element-plus';
 import dayjs from 'dayjs'
+
 export default {
   components: {
     DiscussionPost,
@@ -92,7 +104,8 @@ export default {
         content: [{ required: true, message: '内容不能为空', trigger: 'blur' }]
       },
       dialogImageUrl: '',
-      dialogVisibleImage: false
+      dialogVisibleImage: false,
+      searchKeyword: '',
     };
   },
   computed: {
@@ -102,7 +115,26 @@ export default {
           ? new Date(b.date) - new Date(a.date)
           : new Date(a.date) - new Date(b.date);
       });
-    }
+    },
+    filteredPosts() {
+    let keyword = this.searchKeyword.toLowerCase();
+    
+    return this.sortedPosts.filter(post => {
+      // 检查标题是否包含关键词
+      let titleMatches = post.title.toLowerCase().includes(keyword);
+
+      // 解析并检查话题是否包含关键词
+      let contentMatches = false;
+      
+      // 使用新的正则表达式来匹配包含中文的 `#话题`
+      let topics = post.content.match(/#[\w\u4e00-\u9fa5]+/g) || []; // 匹配 `#` 后跟英文、数字或中文字符的词
+      contentMatches = topics.some(function(topic) {
+        return topic.toLowerCase().includes(`#${keyword}`);
+      });
+
+      return titleMatches || contentMatches;
+    });
+  }
   },
   methods: {
     formatDate(dateString) {
@@ -114,6 +146,17 @@ export default {
       this.$refs.upload.clearFiles(); // 清空 el-upload 文件列表
       this.dialogVisible = false;  // 关闭对话框
     },
+    extractTopics(content) {
+    if (!content) return [];
+    // 使用正则表达式提取所有以 `#` 开头的词
+    let topics = content.match(/#\w+/g) || [];
+  
+    // 将话题去除 `#` 并转换为小写，返回纯文本话题数组
+    return topics.map(function(topic) {
+    return topic.toLowerCase().replace('#', '');
+    });
+  },
+
     async fetchPosts(lessonId) {
       const serverIP = localStorage.getItem('serverIP');
       const accessToken = localStorage.getItem('accessToken');
@@ -123,17 +166,20 @@ export default {
           params: { lessonId },
           headers: {accessToken: accessToken}
         });
-
+        console.log(response);
         if (response.data.success) {
           // 处理返回的数据
           this.posts = response.data.data.map(post => ({
+            
+            
             id: post.id,
             title: post.title,
-            author: post.posterId, // 假设 content 是作者名称
+            author: post.username, 
+            content: post.content,
             date: this.formatDate(post.time), // 替换为实际的日期字段
-            likes: Math.floor(Math.random() * 1000), // 替换为实际的点赞数据
-            viewCount: Math.floor(Math.random() * 1000),
-            favoriteCount: Math.floor(Math.random() * 1000)
+            likes: post.totalLikes, 
+            favoriteCount: post.totalCollect,
+            
           }));
         } else {
           console.error('获取帖子失败:', response.data.message);
@@ -295,5 +341,22 @@ export default {
 
 .upload-demo::v-deep(.el-upload-list__item) {
   width: calc(33.33% - 16px); /* 每个上传框占据三分之一宽度，减去间距 */
+}
+.search-bar-container {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 600px;
+  z-index: 1000;
+  background-color: white;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.search-input {
+  width: 100%;
 }
 </style>

@@ -6,7 +6,7 @@ import { RouterView } from 'vue-router';
 export default {
   components: { SideBar,Login },
   setup(){
-    const serverIP = '192.168.10.231';
+    const serverIP = '192.168.10.210';
     localStorage.setItem('serverIP',serverIP);
   }
 };

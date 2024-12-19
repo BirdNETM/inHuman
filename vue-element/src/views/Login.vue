@@ -55,6 +55,7 @@ export default {
             if (response.data.success) {
               const accessToken = response.data.data.accessToken;
               const refreshToken = response.data.data.refreshToken;
+              
               // 将令牌存储到localStorage中
               localStorage.setItem('accessToken', accessToken);
               localStorage.setItem('refreshToken', refreshToken);

@@ -38,7 +38,7 @@ export default {
   width: 220px; /* 固定宽度 */
   height: 180px; /* 固定高度 */
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   padding: 16px;
   display: flex;

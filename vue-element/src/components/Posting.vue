@@ -7,7 +7,6 @@
           </el-button>
         </el-menu-item>
       </el-menu>
-  
       <!-- 帖子详情 -->
       <div class="posting-detail-card">
         <h1 class="posting-title">{{ postingDetail.title }}</h1>
@@ -37,21 +36,44 @@
     <div class="post-interactions">
       <el-button
         @click="handleLike"
-        :class="{ liked: isLiked }"
+        :class="{ liked: postingDetail.liked }"
         type="text"
         class="action-button"
       >
-        <el-icon><StarFilled /></el-icon> {{ postingDetail.likes }} 点赞
+        <el-icon><el-icon-arrow-up /></el-icon> {{ postingDetail.totalLikes }}
       </el-button>
       <el-button
         @click="handleFavorite"
-        :class="{ favorited: isFavorited }"
+        :class="{ favorited: postingDetail.favorited }"
         type="text"
         class="action-button"
       >
-        <el-icon><Star /></el-icon> {{ postingDetail.favorites }} 收藏
+        <el-icon><Star /></el-icon> {{ postingDetail.totalCollect }}
       </el-button>
     </div>
+
+    <!-- 收藏夹选择对话框 -->
+    <el-dialog
+      title="选择收藏夹"
+      v-model="favoriteDialogVisible"
+      width="400px"
+      @close="selectedFavoriteCategory = null"
+    >
+      <p>选择一个收藏夹将帖子添加其中：</p>
+      <el-select v-model="selectedFavoriteCategory" placeholder="选择收藏夹" class="favorite-select">
+        <el-option
+          v-for="category in favoriteCategories"
+          :key="category.name"
+          :label="category.name"
+          :value="category.name"
+        />
+      </el-select>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="favoriteDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmFavorite">确认收藏</el-button>
+      </div>
+    </el-dialog>
 
       <!-- 评论区域 -->
       <div class="comments-container">
@@ -79,6 +101,9 @@
         ></el-input>
         <el-button type="primary" @click="submitComment" class="submit-button">提交评论</el-button>
       </div>
+
+      <!-- 引用悬浮框组件 -->
+      <TopicPopover ref="topicPopover" />
   
       <!-- 分页器 -->
   
@@ -102,6 +127,7 @@
   import { ref, computed, onMounted } from 'vue';
   import axios from 'axios';
   import { useRoute, useRouter } from 'vue-router';
+  import TopicPopover from './TopicPopover.vue';
   import router from '@/router';
   export default {
     setup() {
@@ -112,7 +138,9 @@
       const picturesCount = ref(0); // 存储所有图片的数组
       const isImageOpen = ref(false);
       const selectedImageUrl = ref("");
-      
+      // 基础的响应式变量
+      const favoriteDialogVisible = ref(false);
+      const selectedFavoriteCategory = ref(null);
       const route = useRoute(); // 获取当前路由信息
       const postingId = route.params.id; // 获取路由参数中的 id
       const openImage = (url) => {
@@ -124,28 +152,15 @@
         { id: 2, content: "这篇帖子非常有帮助，感谢分享！", username: "用户B", time: "2024-10-25T15:00:00.000+08:00" },
         { id: 3, content: "我也遇到过类似的问题，已经解决了。", username: "用户C", time: "2024-10-25T16:45:00.000+08:00" },
         { id: 4, content: "这里的信息非常有价值，学习到了很多。", username: "用户D", time: "2024-10-25T17:30:00.000+08:00" },
-        { id: 5, content: "非常棒的帖子，希望继续更新！", username: "用户E", time: "2024-10-25T18:15:00.000+08:00" },
-        { id: 6, content: "这篇帖子非常有帮助，感谢分享！", username: "用户B", time: "2024-10-25T15:00:00.000+08:00" },
-        { id: 7, content: "我也遇到过类似的问题，已经解决了。", username: "用户C", time: "2024-10-25T16:45:00.000+08:00" },
-        { id: 8, content: "这里的信息非常有价值，学习到了很多。", username: "用户D", time: "2024-10-25T17:30:00.000+08:00" },
-        { id: 9, content: "非常棒的帖子，希望继续更新！", username: "用户E", time: "2024-10-25T18:15:00.000+08:00" },
-        { id: 10, content: "这篇帖子非常有帮助，感谢分享！", username: "用户B", time: "2024-10-25T15:00:00.000+08:00" },
-        { id: 11, content: "我也遇到过类似的问题，已经解决了。", username: "用户C", time: "2024-10-25T16:45:00.000+08:00" },
-        { id: 12, content: "这里的信息非常有价值，学习到了很多。", username: "用户D", time: "2024-10-25T17:30:00.000+08:00" },
-        { id: 13, content: "非常棒的帖子，希望继续更新！", username: "用户E", time: "2024-10-25T18:15:00.000+08:00" },
-        { id: 14, content: "这篇帖子非常有帮助，感谢分享！", username: "用户B", time: "2024-10-25T15:00:00.000+08:00" },
-        { id: 15, content: "我也遇到过类似的问题，已经解决了。", username: "用户C", time: "2024-10-25T16:45:00.000+08:00" },
-        { id: 16, content: "这里的信息非常有价值，学习到了很多。", username: "用户D", time: "2024-10-25T17:30:00.000+08:00" },
-        { id: 17, content: "非常棒的帖子，希望继续更新！", username: "用户E", time: "2024-10-25T18:15:00.000+08:00" },
-        { id: 18, content: "这篇帖子非常有帮助，感谢分享！", username: "用户B", time: "2024-10-25T15:00:00.000+08:00" },
-        { id: 19, content: "我也遇到过类似的问题，已经解决了。", username: "用户C", time: "2024-10-25T16:45:00.000+08:00" },
-        { id: 20, content: "这里的信息非常有价值，学习到了很多。", username: "用户D", time: "2024-10-25T17:30:00.000+08:00" },
-        { id: 21, content: "非常棒的帖子，希望继续更新！", username: "用户E", time: "2024-10-25T18:15:00.000+08:00" }
+        
       ]);
       const newComment = ref("");
       const currentPage = ref(1);
       const pageSize = ref(10);
       const showDetailContent = ref(true);
+
+      // 定义响应式变量，用于存储收藏夹数据
+      const favoriteCategories = ref([]);
   
       // 获取帖子详情
       const fetchPostingDetail = async () => {
@@ -158,7 +173,7 @@
               headers: { accessToken: localStorage.getItem('accessToken') }
             }
           );
-  
+          console.log(postingDetail.liked);
           if (response.data.success) {
             postingDetail.value = response.data.data;
             await fetchAllPictures(postingDetail.value.pictureCounts);
@@ -175,7 +190,7 @@
       console.error("pictureCounts 未定义或为零。");
       return;
     }
-  
+    
     try {
       for (let i = 1; i <= pictureCounts; i++) {
         console.log(`开始获取图片 ${i}`);
@@ -205,24 +220,141 @@
       console.error("获取图片失败:", error);
     }
   };
+    //处理点赞
+    const handleLike = async() => {
+        if (postingDetail.value.liked) {
+          
+          postingDetail.value.totalLikes -= 1;
+          postingDetail.value.liked = !postingDetail.value.liked;
+          try{
+            const response = await axios.post(
+                `http://${serverIP}:8080/like`,
+                {},
+                {
+                  params: { type: 1, postingId: postingDetail.value.id },
+                  headers: { accessToken: localStorage.getItem("accessToken")}
+                }
+                );
+          }catch{
+            console.log("点赞失败");
+          }
+          
+        } else {
+          postingDetail.value.totalLikes += 1;
+          postingDetail.value.liked = !postingDetail.value.liked;
+          const response = await axios.post(
+                `http://${serverIP}:8080/like`,
+                {},
+                {
+                  params: { type: 0, postingId: postingDetail.value.id },
+                  headers: { accessToken: localStorage.getItem("accessToken")}
+                }
+                );
+        }
+      };
+      
+      // 异步获取收藏夹信息
+      const fetchFavoriteCategories = async () => {
+        try {
+          const serverIP = localStorage.getItem('serverIP');
+          const accessToken = localStorage.getItem('accessToken');
 
-  // const handleLike = () => {
-  //     if (isLiked.value) {
-  //       postingDetail.value.likes -= 1;
-  //     } else {
-  //       postingDetail.value.likes += 1;
-  //     }
-  //     isLiked.value = !isLiked.value;
-  //   };
+          // 使用 axios 请求后端获取收藏夹数据
+          const response = await axios.post(`http://${serverIP}:8080/Favorites-Order-By-Type`, null, {
+            headers: {
+              'accessToken': accessToken
+            }
+          });
 
-  //   const handleFavorite = () => {
-  //     if (isFavorited.value) {
-  //       postingDetail.value.favorites -= 1;
-  //     } else {
-  //       postingDetail.value.favorites += 1;
-  //     }
-  //     isFavorited.value = !isFavorited.value;
-  //   };
+          // 检查响应数据结构是否正确
+          if (response && response.data && Array.isArray(response.data.data)) {
+            const favoriteData = response.data.data;
+
+            // 提取所有收藏夹的 type，并存储到 favoriteCategories
+            favoriteCategories.value = favoriteData.map(item => ({
+              name: item.type,
+              posts: Array.isArray(item.postingsList) ? item.postingsList : []
+            }));
+
+            
+            console.log('收藏夹数据:', favoriteCategories.value); // 调试输出所有收藏夹数据
+          }
+        } catch (error) {
+          console.error('获取收藏夹数据失败', error);
+        }
+      };
+      
+      // 打开收藏对话框
+    const openFavoriteDialog = async () => {
+      // 显示收藏对话框前，确保加载了收藏夹信息
+      await fetchFavoriteCategories();
+      favoriteDialogVisible.value = true;
+    };
+
+    // 确认收藏
+    const confirmFavorite = async () => {
+      if (!selectedFavoriteCategory.value) {
+        console.error("未选择收藏夹");
+        return;
+      }
+
+      try {
+        const serverIP = localStorage.getItem('serverIP');
+        const accessToken = localStorage.getItem('accessToken');
+        const postingId = route.params.id;
+
+        // 发送收藏请求到后端
+        await axios.post(
+          `http://${serverIP}:8080/Favorites-add`,
+          {},
+          {
+            headers: { 'accessToken': accessToken },
+            params: { postingId: postingDetail.value.id, type: selectedFavoriteCategory.value }
+          }
+        );
+        
+        console.log(`成功收藏到收藏夹: ${selectedFavoriteCategory.value}`);
+        favoriteDialogVisible.value = false;
+        selectedFavoriteCategory.value = null;
+      } catch (error) {
+        console.error("收藏失败:", error);
+      }
+    };
+      //收藏操作
+      const handleFavorite = async() => {
+        if (postingDetail.value.collected) {
+          // 弹出确认对话框
+          const confirmed = confirm("确定要取消收藏吗？");
+          if (confirmed) {
+            postingDetail.value.totalCollect -= 1;
+            postingDetail.value.collected = false;
+            try {
+              const serverIP = localStorage.getItem('serverIP');
+              const accessToken = localStorage.getItem('accessToken');
+              const postingId = route.params.id;
+
+              // 发送收藏请求到后端
+              await axios.post(
+              `http://${serverIP}:8080/Favorites-delete`,
+              {},
+              {
+                headers: { 'accessToken': accessToken },
+                params: { postingId: postingDetail.value.id }
+              }
+              );
+          } catch (error) {
+            console.error("取消收藏失败:", error);
+          }
+          }
+          
+        } else {
+          openFavoriteDialog();
+          postingDetail.value.totalCollect += 1;
+          postingDetail.value.collected = !postingDetail.value.collected;
+        }
+        
+      };
+
       // 获取评论列表
       const fetchComments = async () => {
         //const postingId = 1;
@@ -243,15 +375,11 @@
         }
       };
 
-      //点赞收藏
-      const handleLike = () => {
-        postingDetail.value.likes += 1;
-        // 这里可以加入请求逻辑，将点赞数据提交到服务器
-      };
-
-      const handleFavorite = () => {
-        postingDetail.value.favorites += 1;
-        // 这里可以加入请求逻辑，将收藏数据提交到服务器
+      // 实现@功能
+      const extractMentionedId = (text) => {
+        const regex = /@(\d+)(?=\s|$)/;
+        const match = regex.exec(text);
+        return match ? parseInt(match[1], 10) : null; // 返回第一个匹配的ID或null
       };
 
       // 提交新评论
@@ -261,20 +389,38 @@
           console.error("评论内容不能为空");
           return;
         }
+
+        const mentionedId = extractMentionedId(newComment.value);
+        
         try {
           const response = await axios.post(
             `http://${serverIP}:8080/Comments-set`,
+            
             { postingId: postingId, content: newComment.value },
             { headers: { accessToken: localStorage.getItem("accessToken") } }
           );
           if (response.data.success) {
+            if (mentionedId) {
+              console.log("提及的用户ID:", mentionedId);
+              console.log(newComment.value);
+              const response1 = await axios.post(
+                `http://${serverIP}:8080/Notice-mention`,
+                {},
+                {
+                  params: { receiver: mentionedId, content: newComment.value },
+                  headers: { accessToken: localStorage.getItem("accessToken")}
+                }
+                );
+              }
+            
             comments.value.push({ content: newComment.value, username: "当前用户", time: new Date() });
             newComment.value = ""; // 清空输入框
           } else {
             console.error("评论提交失败:", response.data.message);
           }
+          
         } catch (error) {
-          console.error("评论提交失败:", error.response || error);
+          console.error("评论提交失败,无法提交:", error.response || error);
         }
       };
   
@@ -293,8 +439,22 @@
       };
   
       const goBack = () => {
+      console.log(postingDetail.value);
       router.push({ name: 'DiscussionList', params: { id: String(postingDetail.value.lessonId) } });
     };
+    // 解析话题并替换为可点击的按钮
+    function renderContentWithTopics(content) {
+      return content.replace(/#(\w+)(?=\s|$)/g, (match, topic) => {
+      return `<button class="topic-button" @click="showTopicPopover('${topic}')">#${topic}</button>`;
+    });
+    }
+    // 在 `setup` 中定义 `showTopicPopover` 函数
+    const showTopicPopover = (topic) => {
+      // 显示话题悬浮框，并将话题名称传递给 `TopicPopover`
+      const topicPopover = document.getElementById("topic-popover");
+      topicPopover.show(topic);
+    };
+    
   
       onMounted(() => {
         fetchPostingDetail();
@@ -319,18 +479,28 @@
         isImageOpen,
         selectedImageUrl,
         openImage,
-        postingId
+        postingId,
+        handleLike,
+        handleFavorite,
+        fetchFavoriteCategories,
+        favoriteCategories,
+        openFavoriteDialog,
+        favoriteDialogVisible,
+        confirmFavorite,
+        selectedFavoriteCategory,
+        showTopicPopover
       };
     }
+    
   };
   </script>
   
   <style scoped>
-  .liked {
+  .action-button.liked {
     color: #ffdd57; /* 点赞后的颜色 */
   }
 
-  .favorited {
+  .action-button.favorited {
     color: #ff7b72; /* 收藏后的颜色 */
   }
   .toolbar {
@@ -483,5 +653,47 @@
     max-height: 90%;
     border-radius: 5px;
   }
-  
+  .post-interactions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #606266; /* 默认按钮颜色 */
+  transition: color 0.3s;
+}
+
+/*悬浮框相关样式*/ 
+.topic-button {
+  background: none;
+  border: none;
+  color: #0073e6;
+  cursor: pointer;
+}
+
+.popover {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.popover-content ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.popover-content li {
+  margin: 5px 0;
+}
+
+
   </style>
