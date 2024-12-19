@@ -124,7 +124,8 @@ export default {
 
 <style scoped>
 .el-menu-vertical-demo {
-  width: 15vw; /* 修改这里的宽度 */
+  min-width: 15vw; /* 修改这里的宽度 */
+  max-width: 15vw;
   height: 100vh;
   border-right: none;
 }

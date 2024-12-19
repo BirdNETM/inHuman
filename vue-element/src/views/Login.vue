@@ -61,8 +61,17 @@ export default {
               localStorage.setItem('refreshToken', refreshToken);
 
               console.log('登录成功, 令牌已保存');
+
               // 跳转到主页
-              router.push({ name: 'Home' });
+              if(response.data.data.position == 1){//student's page
+                router.push({ name: 'Home' });
+              }else if(response.data.data.position == 0){//teacher's page
+                router.push({ name: 'TeacherHome' })
+              }else if(response.data.data.position == 2){//supporter's page
+
+              }
+
+
             } else {
               console.log('登录失败，账号或密码错误');
             }
